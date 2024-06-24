@@ -32,15 +32,13 @@ func NewGoodBossLogic(ctx context.Context, svcCtx *svc.ServiceContext) GoodBossL
 
 func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, error) {
 
-	// 获取10个最佳房东.
-
-	whereBuilder := l.svcCtx.HomestayActivityModel.RowBuilder().Where(squirrel.Eq{
-		"row_type":  model.HomestayActivityGoodBusiType,
-		"row_status" : model.HomestayActivityUpStatus,
+	whereBuilder := l.svcCtx.HomestayActivityModel.SelectBuilder().Where(squirrel.Eq{
+		"row_type":   model.HomestayActivityGoodBusiType,
+		"row_status": model.HomestayActivityUpStatus,
 	})
-	homestayActivityList, err := l.svcCtx.HomestayActivityModel.FindPageListByPage(l.ctx,whereBuilder,0, 10,"data_id desc")
+	homestayActivityList, err := l.svcCtx.HomestayActivityModel.FindPageListByPage(l.ctx, whereBuilder, 0, 10, "data_id desc")
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "获取10个最佳房东. rowType: %s ,err : %v", model.HomestayActivityGoodBusiType, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "get GoodBoss db err. rowType: %s ,err : %v", model.HomestayActivityGoodBusiType, err)
 	}
 
 	var resp []types.HomestayBusinessBoss
@@ -50,26 +48,26 @@ func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, er
 			for _, homestayActivity := range homestayActivityList {
 				source <- homestayActivity.DataId
 			}
-		}, func(item interface{}, writer mr.Writer, cancel func(error)) {
+		}, func(item interface{}, writer mr.Writer[*usercenter.User], cancel func(error)) {
 			id := item.(int64)
 
 			userResp, err := l.svcCtx.UsercenterRpc.GetUserInfo(l.ctx, &usercenter.GetUserInfoReq{
 				Id: id,
 			})
 			if err != nil {
-				logx.WithContext(l.ctx).Errorf("GoodListLogic GoodList最佳房东获取房东信息失败 userId : %d ,err:%v", id, err)
+				logx.WithContext(l.ctx).Errorf("GoodListLogic GoodList fail userId : %d ,err:%v", id, err)
 				return
 			}
 			if userResp.User != nil && userResp.User.Id > 0 {
 				writer.Write(userResp.User)
 			}
-		}, func(pipe <-chan interface{}, cancel func(error)) {
+		}, func(pipe <-chan *usercenter.User, cancel func(error)) {
 
 			for item := range pipe {
 				var typesHomestayBusiness types.HomestayBusinessBoss
 				_ = copier.Copy(&typesHomestayBusiness, item)
 
-				// 计算star todo
+				// compute star todo
 				resp = append(resp, typesHomestayBusiness)
 			}
 		})

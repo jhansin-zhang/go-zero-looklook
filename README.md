@@ -2,7 +2,7 @@
 
 ## go-zero-looklook
 
-English | [简体中文](https://github.com/Mikaelemmmm/go-zero-looklook/blob/master/README-cn.md)
+English | [简体中文](README-cn.md)
 
 
 
@@ -13,6 +13,12 @@ English | [简体中文](https://github.com/Mikaelemmmm/go-zero-looklook/blob/ma
 #### The old rule is to give a star before you see it. Ha ~ ~, if the star is caught, you have to spank, ha ha
 
 I may have contacted go zero earlier. I have been using go zero since about 1000star. Later, I became familiar with the go zero author through wechat. The go zero author was very enthusiastic and patient to help me answer many questions. I also want to actively help go zero promote the community, Basically, I answered the relevant questions in the community group, because in this process, I found that many people felt that go zero did not have a complete project example. As a member of the community who wanted to promote the community, I made an available version open source. The main technology stack includes the following：
+
+
+
+##### Tips : If you are unfamiliar with the technologies in the current stack, don't worry. Simply start by mastering MySQL and Redis. Begin your project by running these two middleware components, and gradually expand your knowledge of the remaining technologies as you progress.
+
+
 
 
 - k8s
@@ -34,8 +40,6 @@ I may have contacted go zero earlier. I have been using go zero since about 1000
 - docker-compose
 - mysql
 - redis
-- gin-vue-admin
-- air
 - modd
 - jenkins
 - gitlab
@@ -45,7 +49,7 @@ I may have contacted go zero earlier. I have been using go zero since about 1000
 
 ## Tutorial video
 
-This is the go zero tutorial I'm recording ：https://www.bilibili.com/medialist/play/389552232?from=space&business=space_series&business_id=2122723&desc=1
+This is the go zero tutorial I'm recording ：https://space.bilibili.com/389552232/video
 
 At the end of this tutorial, we will also share go-zero -looklook. Please look forward to it～
 
@@ -53,7 +57,7 @@ At the end of this tutorial, we will also share go-zero -looklook. Please look f
 
 ## Doc
 
- https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc/english   Under the doc directory of the project
+ Documentation can de found under [doc/english](doc/english/) in the project.
 
 
 
@@ -70,9 +74,6 @@ The whole project uses the micro services developed by go zero, which basically 
 
 
 The project directory structure is as follows：
-
--  admin：Background code (integrated with gin Vue admin, acting as a large background gateway) uses grpc to interact with RPC business under app. There is an example of code interaction between background gin Vue admin and go zero. If you don't want the background, you can directly delete the whole folder of admin and execute go mod tidy once
-- admin/web : Background web side code, gin-Vue-admin(https://github.com/flipped-aurora/gin-vue-admin)
 
 
 - app：All business codes include API, RPC and MQ (message queue, delay queue, scheduled task)
@@ -106,9 +107,7 @@ The project directory structure is as follows：
 
 ## Gateway
 
-Nginx acts as a gateway and uses the auth module of nginx to call the identity service of the back-end for unified authentication. There is no authentication within the business. If there are a lot of business funds involved, you can also carry out secondary authentication in the business for security.
-
-In addition, many students think nginx is not very good as a gateway. The principle is basically the same. They can replace it with apisik, Kong .. 
+nginx do external gateway, gateway in front of the slb, in addition, many students feel that nginx do not do gateway is not very good, this piece of principle is basically the same, you can replace it with apisix, kong, etc. 
 
 
 
@@ -138,23 +137,21 @@ Go zero supports Jaeger and Zipkin by default. You only need to configure it. Yo
 
 
 
-## Message queue
+## Pub\Sub
 
-The message queue uses the go queue developed by the go zero development team. The link is: https://github.com/zeromicro/go-queue
+kafka ，Publish subscription using go-zero development team developed by go-queue, link: https://github.com/zeromicro/go-queue
 
-KQ can be used here. KQ is a high-performance message queue based on Kafka
-
-DQ queue is used in the current project, but there is no delay in DQ queue
+Here we use kq, kq is based on kafka to do high-performance publish subscriptions
 
 
 
-## Delay queue, Scheduled task
+## Message queues, delayed queues, timed tasks
 
-Delay queue and scheduled tasks this project uses asynq, a simple middleware developed based on redis,
+Message queues, delay queues, timed tasks This project uses asynq, a simple middleware developed based on redis.
 
-Of course, asynq also supports message queues. You can also replace KQ message queues with this one. After all, it's good to only need redis without maintaining a Kafka
+Of course, the message queue you can also use go-queue
 
-Link：https://github.com/hibiken/asynq
+Link: https://github.com/hibiken/asynq
 
 
 
@@ -172,11 +169,11 @@ Docker compose is recommended in the development environment of the project. The
 
 For testing and online deployment, k8s (etcd, Nacos, consumer, etc.) has detailed tutorials (build + deploy), which can be communicated in the go zero community group, which is very easy
 
-project doc ：https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
+project doc ：[https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc](doc/)
 
 gitlab + jenkins + harbor + k8s
 
-Click deploy the corresponding service in Jenkins, and you will go to gitlab to pull the code -- > and then pull the online configuration (a separate git library is configured online, why not use the configuration center, which is described in the deployment document) - -- > automatically build the image -- > push it to the harbor image warehouse -- > automatically publish it to k8s using kubectl -- > a nignx should be hung in front as the gateway for unified entry, authentication, current restriction ....
+Click in jenkins to deploy the corresponding service, will go to gitlab to pull the code --> then go to pull the online configuration (online configuration of a separate git repository, why not use the configuration center, the deployment documentation has an introduction) ----> automatically build the image --> push to harbor mirror repository --> use kubectl to automatically publish to k8s ----> in front to hang a nginx do gateway unified portal
 
 
 
@@ -185,8 +182,6 @@ Click deploy the corresponding service in Jenkins, and you will go to gitlab to 
 go-zero : https://github.com/zeromicro/go-zero
 
 dtm：https://github.com/dtm-labs/dtm
-
-gin-vue-admin：https://github.com/flipped-aurora/gin-vue-admin
 
 
 
